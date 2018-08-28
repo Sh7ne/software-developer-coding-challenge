@@ -1,13 +1,11 @@
 package tradeRev.com.example.carBidding.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tradeRev.com.example.carBidding.model.Bid;
 import tradeRev.com.example.carBidding.repository.BidRepository;
-import tradeRev.com.example.carBidding.exception.ResourceException;
-
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,45 +16,42 @@ public class BidController {
     @Autowired
     BidRepository bidRepository;
 
-    @GetMapping("/bids")
-    public List<Bid> getAllBids() {
-        return bidRepository.findAll();
-    }
-
     @PostMapping("/bids")
     public Bid createBid(@Valid @RequestBody Bid bid) {
-        return bidRepository.save(bid);
+        List<Bid> bids= new ArrayList<>();
+        String carId=bid.getCarId();
+        bids=bidRepository.findByCarId(carId);
+        //Check if the car is the first time bidding
+        if(bids.size()>0){
+        //Find the current winning bid by find the last element in the list
+        Bid windBid =bids.get(bids.size()-1);
+        float currentPrice=Float.parseFloat(windBid.getCurrentPrice()) ;
+        float newPrice=Float.parseFloat(bid.getCurrentPrice());
+        //Make sure only higher bidding price can be added to database
+        if(newPrice>currentPrice&&(bid.getClosed().equals("false"))){
+        return bidRepository.save(bid);}
+        else {return null;}
+        }
+        else return bidRepository.save(bid);
     }
 
-    @GetMapping("/bids/{id}")
-    public Bid getBidById(@PathVariable(value = "id") Long bidId) {
-        return bidRepository.findById(bidId)
-                .orElseThrow(() -> new ResourceException("Bid", "id", bidId));
+    //Find the highest bid for this car
+    @GetMapping("/winBid/{id}")
+    public Bid getWinBid(@PathVariable(value = "id") String carId) {
+        List<Bid> bids= new ArrayList<>();
+        bids = bidRepository.findByCarId(carId);
+        //Find the current winning bid by find the last element in the list
+        Bid windBid =bids.get(bids.size()-1);
+        return windBid;
     }
+    //Get bidding information by searching carId
+    @GetMapping("/bidHistory/{id}")
+    public List<Bid> getBidByCarID(@PathVariable(value = "id") String carId) {
 
-    @PutMapping("/bids/{id}")
-    public Bid updateBid(@PathVariable(value = "id") Long bidId,
-                           @Valid @RequestBody Bid bidDetails) {
-
-        Bid bid = bidRepository.findById(bidId)
-                .orElseThrow(() -> new ResourceException("Bid", "id", bidId));
-
-        bid.setItemId(bidDetails.getItemId());
-        bid.setCurrentPrice(bidDetails.getCurrentPrice());
-        bid.setClosed(bidDetails.isClosed());
+        List<Bid> bids= new ArrayList<>();
+        bids = bidRepository.findByCarId(carId);
+            return bids;
+        }
 
 
-        Bid updatedBid = bidRepository.save(bid);
-        return updatedBid;
-    }
-
-    @DeleteMapping("/bids/{id}")
-    public ResponseEntity<?> deleteBid(@PathVariable(value = "id") Long bidId) {
-        Bid bid = bidRepository.findById(bidId)
-                .orElseThrow(() -> new ResourceException("Bid", "id", bidId));
-
-        bidRepository.delete(bid);
-
-        return ResponseEntity.ok().build();
-    }
 }

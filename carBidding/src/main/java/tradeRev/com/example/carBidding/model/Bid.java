@@ -1,11 +1,8 @@
 package tradeRev.com.example.carBidding.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import java.util.Date;
+
 
     @Entity
     @Table(name = "bids")
@@ -13,64 +10,49 @@ import java.util.Date;
     @JsonIgnoreProperties(value = {"createdAt", "updatedAt"},
             allowGetters = true)
     public class Bid {
-
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long itemId;
+        private Long bidId;
 
-        @NotBlank
-        private float currentPrice;
+        private String currentPrice;
 
-        @NotBlank
-        private boolean closed;
+        private String closed;
 
-        @Column(nullable = false, updatable = false)
-        @Temporal(TemporalType.TIMESTAMP)
-        @CreatedDate
-        private Date createdAt;
+        private String carId;
+        protected Bid() {}
 
-        @Column(nullable = false)
-        @Temporal(TemporalType.TIMESTAMP)
-        @LastModifiedDate
-        private Date updatedAt;
+        public Bid(String currentPrice, String closed, String carId) {
+            this.currentPrice = currentPrice;
+            this.closed = closed;
+            this.carId = carId;
 
-        public Long getItemId() {
-            return itemId;
         }
 
-        public void setItemId(Long itemId) {
-            this.itemId = itemId;
+        @Override
+        public String toString() {
+            return String.format(
+                    "Bid[bidId=%d, currentPrice='%s', closed='%s',carId='%s']",
+                    bidId,currentPrice, closed, carId);
         }
 
-        public float getCurrentPrice() {
+        public Long getBidId() {
+            return bidId;
+        }
+
+        public void setBidId(Long bidId) {
+            this.bidId = bidId;
+        }
+
+        public String getCurrentPrice() {
             return currentPrice;
         }
 
-        public void setCurrentPrice(float currentPrice) {
-            this.currentPrice = currentPrice;
+        public String getCarId() {
+            return carId;
         }
 
-        public boolean isClosed() {
+        public String getClosed() {
             return closed;
         }
 
-        public void setClosed(boolean closed) {
-            this.closed = closed;
-        }
-
-        public Date getCreatedAt() {
-            return createdAt;
-        }
-
-        public void setCreatedAt(Date createdAt) {
-            this.createdAt = createdAt;
-        }
-
-        public Date getUpdatedAt() {
-            return updatedAt;
-        }
-
-        public void setUpdatedAt(Date updatedAt) {
-            this.updatedAt = updatedAt;
-        }
     }

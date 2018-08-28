@@ -1,5 +1,4 @@
 tradeRev\com\example\carBidding\controller\BidController.class
-tradeRev\com\example\carBidding\exception\ResourceException.class
 tradeRev\com\example\carBidding\repository\BidRepository.class
 tradeRev\com\example\carBidding\model\Bid.class
 tradeRev\com\example\carBidding\CarBiddingApplication.class
