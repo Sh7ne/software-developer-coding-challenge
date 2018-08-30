@@ -19,20 +19,23 @@ import javax.persistence.*;
         private String closed;
 
         private String carId;
+
+        private String userId;
+
         protected Bid() {}
 
-        public Bid(String currentPrice, String closed, String carId) {
+        public Bid(String currentPrice, String closed, String carId,String userId) {
             this.currentPrice = currentPrice;
             this.closed = closed;
             this.carId = carId;
-
+            this.userId=userId;
         }
 
         @Override
         public String toString() {
             return String.format(
                     "Bid[bidId=%d, currentPrice='%s', closed='%s',carId='%s']",
-                    bidId,currentPrice, closed, carId);
+                    bidId,currentPrice, closed, carId,userId);
         }
 
         public Long getBidId() {
@@ -55,4 +58,11 @@ import javax.persistence.*;
             return closed;
         }
 
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
     }
